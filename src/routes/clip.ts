@@ -1,17 +1,19 @@
 import { Request, Response } from "express";
 
-const D_ID_API_URL = "https://api.d-id.com/clips";
+// We use D-ID *Talks* (single-portrait lipsync) instead of *Clips* (multi-shot scenes).
+// Talks render in roughly 8-20s vs 30-60s for Clips, with the same input shape.
+const D_ID_API_URL = "https://api.d-id.com/talks";
 
-const DEFAULT_PRESENTER_ID =
-  process.env.D_ID_PRESENTER_ID || "v2_public_alex@qcvo4gupoy";
+const DEFAULT_SOURCE_URL =
+  process.env.D_ID_SOURCE_URL ||
+  "https://create-images-results.d-id.com/api_docs/assets/noelle_t.jpeg";
 const DEFAULT_VOICE_ID =
   process.env.ELEVENLABS_VOICE_ID || "iP95p4xoKVk53GoZ742B";
 
 type CreateClipBody = {
   text: string;
-  presenterId?: string;
+  sourceUrl?: string;
   voiceId?: string;
-  bgColor?: string;
 };
 
 function authHeader(apiKey: string) {
@@ -22,13 +24,13 @@ export async function createClipHandler(req: Request, res: Response) {
   const apiKey = process.env.D_ID_API_KEY;
   if (!apiKey) return res.status(500).json({ error: "D_ID_API_KEY is not set" });
 
-  const { text, presenterId, voiceId, bgColor } = req.body as CreateClipBody;
+  const { text, sourceUrl, voiceId } = req.body as CreateClipBody;
   if (!text || typeof text !== "string" || !text.trim()) {
     return res.status(400).json({ error: "`text` is required" });
   }
 
-  const presenter = presenterId ?? DEFAULT_PRESENTER_ID;
-  const body: Record<string, any> = {
+  const body = {
+    source_url: sourceUrl ?? DEFAULT_SOURCE_URL,
     script: {
       type: "text",
       input: text,
@@ -36,15 +38,11 @@ export async function createClipHandler(req: Request, res: Response) {
       provider: { type: "elevenlabs", voice_id: voiceId ?? DEFAULT_VOICE_ID },
     },
     config: {
-      result_format: "mp4",
+      stitch: true,
       fluent: true,
-      driver_expressions: { expressions: [], transition_frames: 0 },
+      result_format: "mp4",
     },
-    presenter_id: presenter,
   };
-  if (bgColor && /greenscreen/i.test(presenter)) {
-    body.background = { color: bgColor };
-  }
 
   try {
     const r = await fetch(D_ID_API_URL, {
