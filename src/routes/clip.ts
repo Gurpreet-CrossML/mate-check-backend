@@ -6,7 +6,7 @@ const D_ID_API_URL = "https://api.d-id.com/talks";
 
 const DEFAULT_SOURCE_URL =
   process.env.D_ID_SOURCE_URL ||
-  "https://create-images-results.d-id.com/api_docs/assets/noelle_t.jpeg";
+  "https://crosml-public.s3.us-east-1.amazonaws.com/Screenshot_from_2026-05-12_18-28-49-removebg-preview.png";
 const DEFAULT_VOICE_ID =
   process.env.ELEVENLABS_VOICE_ID || "iP95p4xoKVk53GoZ742B";
 
