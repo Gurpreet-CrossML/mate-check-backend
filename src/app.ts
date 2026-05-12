@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { chatHandler } from "./routes/chat";
-import { clipHandler } from "./routes/clip";
+import { createClipHandler, getClipHandler } from "./routes/clip";
 
 export function createApp() {
   const app = express();
@@ -14,7 +14,8 @@ export function createApp() {
   });
 
   app.post("/api/chat", chatHandler);
-  app.post("/api/clip", clipHandler);
+  app.post("/api/clip", createClipHandler);
+  app.get("/api/clip/:id", getClipHandler);
 
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Unhandled error:", err);
