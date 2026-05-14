@@ -26,8 +26,9 @@ export async function ttsHandler(req: Request, res: Response) {
 
   try {
     const client = new OpenAI({ apiKey });
+    const model = process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts";
     const audioRes = await client.audio.speech.create({
-      model: "gpt-4o-mini-tts",
+      model,
       voice: (voice || process.env.OPENAI_TTS_VOICE || "alloy") as any,
       input: text,
       response_format: "pcm",
