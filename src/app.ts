@@ -1,14 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { chatHandler } from "./routes/chat";
-import { createClipHandler, getClipHandler } from "./routes/clip";
-import {
-  closeStreamHandler,
-  createStreamHandler,
-  iceHandler,
-  sdpHandler,
-  talkHandler,
-} from "./routes/streams";
+import { ttsHandler } from "./routes/tts";
 
 export function createApp() {
   const app = express();
@@ -21,14 +14,7 @@ export function createApp() {
   });
 
   app.post("/api/chat", chatHandler);
-  app.post("/api/clip", createClipHandler);
-  app.get("/api/clip/:id", getClipHandler);
-
-  app.post("/api/streams", createStreamHandler);
-  app.post("/api/streams/:id/sdp", sdpHandler);
-  app.post("/api/streams/:id/ice", iceHandler);
-  app.post("/api/streams/:id/talk", talkHandler);
-  app.delete("/api/streams/:id", closeStreamHandler);
+  app.post("/api/tts", ttsHandler);
 
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Unhandled error:", err);
